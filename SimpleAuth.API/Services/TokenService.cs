@@ -15,30 +15,30 @@ namespace SimpleAuth.API.Services
 
         public AuthResponse CreateToken(User user)
         {
-            // 1) Claim'leri hazırla
+            // 1) Prepare the claims
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email)
             };
 
-            // 2) Gizli anahtar
+            // 2) Secret key
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
 
-            // 3) İmzalama algoritması
+            // 3) Signature algorithm
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // 4) Token süresi
+            // 4) Token duration
             var expiration = DateTime.UtcNow.AddMinutes(_expirationMinutes);
 
-            // 5) Token oluşturma
+            // 5) Token creation
             var token = new JwtSecurityToken(
                 claims: claims,
                 expires: expiration,
                 signingCredentials: creds
                 );
 
-            // 6) Token’ı string’e çevir
+            // 6) Convert the token to a string
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             return new AuthResponse

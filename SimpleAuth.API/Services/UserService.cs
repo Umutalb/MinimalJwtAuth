@@ -7,10 +7,10 @@ namespace SimpleAuth.API.Services
 {
     public class UserService : IUserService
     {
-        // In-memory kullanıcı listesi
+        // In-memory user list
         private readonly List<User> _users = new();
 
-        // Email’e göre kullanıcı bulma
+        // Finding users by email
         public User? GetByEmail(string email)
         {
             return _users.FirstOrDefault(u => u.Email == email);
@@ -18,38 +18,38 @@ namespace SimpleAuth.API.Services
 
         public User Register(string email, string password)
         {
-            // Aynı email varsa hata
+            // If the same email exists, error
             if (GetByEmail(email) != null)
                 throw new Exception("Email is already registered.");
 
-            // Yeni kullanıcı oluştur
+            // Create a new user
             var user = new User
                 {
                 Email = email,
                 PasswordHash = HashPassword(password)
                 };
 
-            // Listeye ekle
+            // Add to list
             _users.Add(user);
 
             return user;
         }
 
-        // Login doğrulama
+        // Login verification
         public User? Login(string email, string password)
         {
             var user = GetByEmail(email);
             if (user == null)
                 return null;
 
-            // Şifre doğru mu?
+            // Is the password correct?
             if (user.PasswordHash != HashPassword(password))
                 return null;
 
             return user;
         }
 
-        // Şifre hash’leme (basit SHA256)
+        // Password hashing (simple SHA256)
         private string HashPassword(string password)
         {
             using var sha = SHA256.Create();
